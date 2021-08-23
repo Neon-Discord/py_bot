@@ -15,6 +15,7 @@ statsCategoryID = config_file['statsCategoryID']
 comBotRoleID = config_file['comBotRoleID']
 
 communityBots = 0
+initState = False
 
 class Infochannel(commands.Cog):
     def __init__(self, bot):
@@ -52,14 +53,17 @@ async def icInit(ctx):
         guild.default_role: discord.PermissionOverwrite(view_channel=False, connect=False),
         guild.get_role(877973435748331591): discord.PermissionOverwrite(view_channel=True, connect=False)
     }
+    global initState
+    initState = True
 
     embed = discord.Embed(title = 'Nouvel infochannel', color = discord.Color.orange())
     embed.add_field(name = 'Le texte', value = 'Tapez le texte que l\'infochannel va afficher ainsi que des @mentions de __rôles__ qui compteront le nombre de membre possédant ce/ces rôle.')
-
+    
     await ctx.send(embed=embed)
     #theInfochannel = await get(guild.categories, id=statsCategoryID).create_voice_channel(name='Ragbot displays : {}'.format(communityBots), overwrites=overwrites)
     #save_file['infochannelID'] = theInfochannel.id
     #saveData()
+
 
 async def icUpdate(ctx):
     await communityBotsCount(ctx)
@@ -67,10 +71,12 @@ async def icUpdate(ctx):
     await ctx.reply(':white_check_mark: infochannel mis à jour !')
     print('infochannel updated')
 
+
 async def icRemove(ctx):
     await ctx.guild.get_channel(save_file['infochannelID']).delete(reason='command \'infochannel remove\' used by {}'.format(ctx.author))
     await ctx.reply(':white_check_mark: infochannel supprimé !')
     print('infochannel removed')
+
 
 async def communityBotsCount(ctx):
     global communityBots
@@ -79,6 +85,7 @@ async def communityBotsCount(ctx):
         if get(ctx.guild.roles, id=comBotRoleID) in member.roles :
             communityBots += 1
     print('community bots : {}'.format(communityBots))
+
 
 def saveData():
     with open('save.json', 'w') as file_object:
