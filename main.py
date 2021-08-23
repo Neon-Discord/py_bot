@@ -5,7 +5,7 @@ from discord.channel import CategoryChannel
 from discord.ext.commands import Bot
 from discord.ext import commands
 from discord.ext.commands.converter import clean_content
-from discord.flags import Intents
+from discord.flags import Intents, MessageFlags
 from discord.member import Member
 from discord.utils import get
 
@@ -14,8 +14,6 @@ import os
 from os import getenv
 
 import json
-
-from cogs.infochannel import icUpdate
 
 intents = discord.Intents.default()
 intents.members = True
@@ -72,25 +70,9 @@ async def on_ready():
 async def on_member_update(before, after):
     return before, after
 
-@client.command()
-async def test(ctx):
-    await ctx.reply('test')
 
-@client.command()
-async def load(ctx, *, name: str):
-    try:
-        client.load_extension(f"cogs.{name}")
-    except Exception as e:
-        return await ctx.send(e)
-    await ctx.reply(f'"**{name}**" Cog loaded')
 
-@client.command()
-async def reload(ctx, *, name: str):
-    try:
-        client.reload_extension(f"cogs.{name}")
-    except Exception as e:
-        return await ctx.send(e)
-    await ctx.reply(f'"**{name}**" Cog reloaded')
+
 
 @client.command()
 async def getuser(ctx, role: discord.Role):
