@@ -1,0 +1,4 @@
+.env
+/bot-env
+/__pycache__
+/cogs/__pycache__
