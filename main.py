@@ -33,7 +33,6 @@ for file in os.listdir("./cogs"): # lists all the cog files inside the cog folde
         print("cog loaded : ", name)
 
 
-
 guildID = 876210790250741830
 statsCategoryID = 878065627758207016
 comBotRoleID = 878043146284580894
@@ -65,28 +64,8 @@ async def on_ready():
     print('community bots : {}'.format(communityBots))
 
 @client.command()
-async def test(ctx):
+async def ragtest(ctx):
     await ctx.reply('test')
-
-@client.command()
-async def load(ctx, *, name: str):
-    try:
-        client.load_extension(f"cogs.{name}")
-    except Exception as e:
-        return await ctx.send(e)
-    await ctx.reply(f'"**{name}**" Cog loaded')
-
-@client.command()
-async def reload(ctx, *, name: str):
-    try:
-        client.reload_extension(f"cogs.{name}")
-    except Exception as e:
-        return await ctx.send(e)
-    await ctx.reply(f'"**{name}**" Cog reloaded')
-
-@client.command()
-async def getuser(ctx, role: discord.Role):
-    await ctx.reply("\n".join(str(role) for role in role.members))
 
 
 

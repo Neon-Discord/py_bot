@@ -1,5 +1,6 @@
 import discord
 from discord import role
+from discord import colour
 from discord.utils import get
 from discord.ext import commands
 from main import client
@@ -42,22 +43,23 @@ class Infochannel(commands.Cog):
 
 def setup(bot):
     empty = 0
-    #bot.add_cog(Infochannel(bot))
 
 
 async def icInit(ctx):
-    global theInfochannel
     await communityBotsCount(ctx)
     guild = ctx.guild
     overwrites = {
         guild.default_role: discord.PermissionOverwrite(view_channel=False, connect=False),
         guild.get_role(877973435748331591): discord.PermissionOverwrite(view_channel=True, connect=False)
     }
-    theInfochannel = await get(guild.categories, id=statsCategoryID).create_voice_channel(name='Ragbot displays : {}'.format(communityBots), overwrites=overwrites)
-    save_file['infochannelID'] = theInfochannel.id
-    saveData()
-    await ctx.reply(':white_check_mark: infochannel créé !')
-    print('infochannel created')
+
+    embed = discord.Embed(title = 'Nouvel infochannel', color = discord.Color.orange())
+    embed.add_field(name = 'Le texte', value = 'Tapez le texte que l\'infochannel va afficher ainsi que des @mentions de __rôles__ qui compteront le nombre de membre possédant ce/ces rôle.')
+
+    await ctx.send(embed=embed)
+    #theInfochannel = await get(guild.categories, id=statsCategoryID).create_voice_channel(name='Ragbot displays : {}'.format(communityBots), overwrites=overwrites)
+    #save_file['infochannelID'] = theInfochannel.id
+    #saveData()
 
 async def icUpdate(ctx):
     await communityBotsCount(ctx)
