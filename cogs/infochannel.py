@@ -1,21 +1,21 @@
 import discord
-from discord import role
-from discord import colour
-from discord.utils import get
 from discord.ext import commands
+from discord.ext.commands.core import check
 from main import client
 import json
+import random
 
-with open('config.json', 'r') as file_object:  
+with open('config.json') as file_object:  
     config_file = json.load(file_object)
-with open('save.json', 'r') as file_object:
+with open('save_infochannels.json') as file_object:
     save_file = json.load(file_object)
 
 statsCategoryID = config_file['statsCategoryID']
 comBotRoleID = config_file['comBotRoleID']
 
 communityBots = 0
-initState = False
+initState = 0
+
 
 class Infochannel(commands.Cog):
     def __init__(self, bot):
@@ -23,72 +23,55 @@ class Infochannel(commands.Cog):
 
     @client.command()
     @commands.has_guild_permissions(manage_channels=True)
-    async def infochannel(ctx, arg):
-        if arg == 'init' :
-            await icInit(ctx)
-        elif arg == 'update' :
-            await icUpdate(ctx)
-        elif arg == 'remove' :
-            await icRemove(ctx)
-
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print("cog Infochannel loaded")
+    async def abc(ctx):
+        await ctx.reply('yes')
     
-    @commands.Cog.listener()
+    @client.event
     async def on_member_update(before, after):
-        print('member update')
-        if after.guild.get_role(comBotRoleID) in (after.roles or before.roles):
-            await communityBotsCount(after)
+        if before.roles != after.roles or after.roles != before.roles:
+            await icUpdate()
+
+    @client.event
+    async def on_member_join():
+        await icUpdate()
+    
+    @client.event
+    async def on_member_remove():
+        await icUpdate()
 
 def setup(bot):
-    empty = 0
+    None
 
 
-async def icInit(ctx):
-    await communityBotsCount(ctx)
-    guild = ctx.guild
-    overwrites = {
-        guild.default_role: discord.PermissionOverwrite(view_channel=False, connect=False),
-        guild.get_role(877973435748331591): discord.PermissionOverwrite(view_channel=True, connect=False)
-    }
-    global initState
-    initState = True
+async def icUpdate():
+    guild = client.get_guild(888866727562207283)
 
-    embed = discord.Embed(title = 'Nouvel infochannel', color = discord.Color.orange())
-    embed.add_field(name = 'Le texte', value = 'Tapez le texte que l\'infochannel va afficher ainsi que des @mentions de __rôles__ qui compteront le nombre de membre possédant ce/ces rôle.')
-    
-    await ctx.send(embed=embed)
-    #theInfochannel = await get(guild.categories, id=statsCategoryID).create_voice_channel(name='Ragbot displays : {}'.format(communityBots), overwrites=overwrites)
-    #save_file['infochannelID'] = theInfochannel.id
-    #saveData()
+    for channel in save_file:
 
+        count = 0
 
-async def icUpdate(ctx):
-    await communityBotsCount(ctx)
-    await ctx.guild.get_channel(save_file['infochannelID']).edit(name='Ragbot displays : {}'.format(communityBots))
-    await ctx.reply(':white_check_mark: infochannel mis à jour !')
-    print('infochannel updated')
+        if save_file[channel]['roleID'] == 'bot':
+            for member in guild.members:
+                if member.bot == True:
+                    count += 1
+        
+        elif save_file[channel]['roleID'] == 'human':
+            for member in guild.members:
+                if member.bot == False:
+                    count += 1
 
-
-async def icRemove(ctx):
-    await ctx.guild.get_channel(save_file['infochannelID']).delete(reason='command \'infochannel remove\' used by {}'.format(ctx.author))
-    await ctx.reply(':white_check_mark: infochannel supprimé !')
-    print('infochannel removed')
-
-
-async def communityBotsCount(ctx):
-    global communityBots
-    communityBots = 0
-    async for member in ctx.guild.fetch_members(limit=None) :
-        if get(ctx.guild.roles, id=comBotRoleID) in member.roles :
-            communityBots += 1
-    print('community bots : {}'.format(communityBots))
+        else:
+            members = guild.get_role(save_file[channel]['roleID']).members
+            count = len(members)
+        
+        print('Infochannel <{0}> will be update to <{1}>'.format(save_file[channel]['text'], count))
+        text = save_file[channel]['text'] + str(count) + save_file[channel]['textAfter']
+        await client.get_channel(888866728241692791).send('**{0}** sera mis à jour : **{1}**'.format(save_file[channel]['text'], count))
+        await client.get_channel(int(channel)).edit(name=text)
+        await client.get_channel(888866728241692791).send('**{0}** a été mis à jour'.format(save_file[channel]['text']))
 
 
 def saveData():
     with open('save.json', 'w') as file_object:
         json.dump(save_file, file_object)
         file_object.close()
-

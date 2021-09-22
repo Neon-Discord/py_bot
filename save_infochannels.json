@@ -1,0 +1,15 @@
+{
+    "888866727667040317":
+        {
+            "text": "Bots de la commu : ",
+            "roleID": 888866727667040310,
+            "textAfter": ""
+        },
+    
+    "888866727948066826":
+        {
+            "text": "Humains : ",
+            "roleID": "human",
+            "textAfter": ""
+        }
+}

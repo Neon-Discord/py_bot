@@ -22,4 +22,4 @@ class LoadCogs(commands.Cog):
         await ctx.reply(f'"**{name}**" Cog reloaded')
 
 def setup(bot):
-    empty=0
+    None
